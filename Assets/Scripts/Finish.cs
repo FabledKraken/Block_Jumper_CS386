@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Numerics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,12 +8,15 @@ public class Finish : MonoBehaviour
 {
     private bool levelCompleted = false;
 
+    [SerializeField] private AudioSource endSoundEffect;
+
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (col.gameObject.name == "Player" && !levelCompleted)
         {
             levelCompleted = true;
-            Invoke("CompleteLevel", .5f);
+            endSoundEffect.Play();
+            Invoke("CompleteLevel", .75f);
         }
     }
 

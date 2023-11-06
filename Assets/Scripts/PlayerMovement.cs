@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IDataPersistence
 {
     private Animator anim;         // used for the animations of the player
     private BoxCollider2D coll;    // used for boxcollider2d of player
@@ -22,6 +19,8 @@ public class PlayerMovement : MonoBehaviour
     // Enum to control animation state {0, 1, 2, 3} 
     private enum MovementState { idle, running, jumping, falling }
 
+    [SerializeField] private AudioSource jumpSoundEffect;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,17 +33,22 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Movement in the X-axis (stops immediately and keeps velocity in the y
-        dirX = Input.GetAxisRaw("Horizontal");
-        rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
-        
-        // Uses Unity presets to jump and keeps velocity in the x
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        if (!PauseMenu.isPaused)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+            // Movement in the X-axis (stops immediately and keeps velocity in the y
+            dirX = Input.GetAxisRaw("Horizontal");
+            rb.velocity = new Vector2(dirX * moveSpeed, rb.velocity.y);
+
+            // Uses Unity presets to jump and keeps velocity in the x
+            if (Input.GetButtonDown("Jump") && IsGrounded())
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                jumpSoundEffect.Play();
+            }
+
+            UpdateAnimationState();
         }
-        
-        UpdateAnimationState();
     }
 
     // Updates the animations of the player
@@ -84,6 +88,16 @@ public class PlayerMovement : MonoBehaviour
         
         // Sets the state of the animation to the type casted state of my enum
         anim.SetInteger("state", (int)state);
+    }
+
+    public void LoadData(GameData data)
+    {
+        transform.position = data.playerPos;
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        data.playerPos = transform.position;
     }
 
     private bool IsGrounded()

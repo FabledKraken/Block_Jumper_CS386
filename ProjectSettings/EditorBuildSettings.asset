@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/Title Screen.unity
     guid: 3ecc3ffd80feb3643a8fbe4d8a8a67a3
   - enabled: 1
-    path: Assets/Scenes/Ninja Frog Jumper.unity
+    path: Assets/Scenes/First Level.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Second Level.unity
+    guid: 18e2e796be6e3fd4ba4919ece053a1f7
+  - enabled: 1
+    path: Assets/Scenes/Third Level.unity
+    guid: dae310268d7afdf49adff45382a73658
   - enabled: 1
     path: Assets/Scenes/End Screen.unity
     guid: 7ba0f0df2e5fd6d40ba330289cea0872

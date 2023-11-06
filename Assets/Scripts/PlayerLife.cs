@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +5,10 @@ public class PlayerLife : MonoBehaviour
 {
     private Animator anim;  // used for animations
     private Rigidbody2D rb; // used to control rigidbody2d of player
+
+    [SerializeField] private AudioSource deathSoundEffect;
+    [SerializeField] private AudioSource deathSoundEffectHelper;
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>(); // rigidbody2d of player
@@ -27,6 +28,8 @@ public class PlayerLife : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player Died");
+        deathSoundEffect.Play();
+        deathSoundEffectHelper.Play();
         anim.SetTrigger("death");
         rb.bodyType = RigidbodyType2D.Static; // change player to not be interactable anymore
     }
