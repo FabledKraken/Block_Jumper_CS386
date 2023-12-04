@@ -6,6 +6,7 @@ public class StartMenu : MonoBehaviour
     // Starts the first level
     public void StartGame()
     {
+        DataPersistenceManager.Instance.NewGame();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
@@ -19,6 +20,7 @@ public class StartMenu : MonoBehaviour
     public void Load()
     {
         DataPersistenceManager.Instance.LoadGame();
+        SceneManager.LoadScene(DataPersistenceManager.Instance.getScene());
     }
 
     // Quits the game when the quit button is pressed, called from title screen

@@ -92,7 +92,7 @@ public class PlayerMovement : MonoBehaviour, IDataPersistence
 
     public void LoadData(GameData data)
     {
-        transform.position = data.playerPos;
+        transform.position = Vector3.zero;
     }
 
     public void SaveData(ref GameData data)

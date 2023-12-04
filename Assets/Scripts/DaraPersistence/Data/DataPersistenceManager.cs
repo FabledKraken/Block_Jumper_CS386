@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 
 public class DataPersistenceManager : MonoBehaviour
 {
@@ -20,6 +19,10 @@ public class DataPersistenceManager : MonoBehaviour
         {
             Debug.Log("Found more than one Data Persistence Manager in the Scene");
         }
+        else
+        {
+            Debug.Log("Data Persistence Manager instance created");
+        }
 
         Instance = this;
     }
@@ -33,29 +36,58 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void NewGame()
     {
+        // Delete the existing saved file
+        _dataHandler.Delete();
+
+        // Create a new GameData instance
         _gameData = new GameData();
+        PlayerLivesManager.Instance.SetLives(3);
     }
 
     public void LoadGame()
     {
+        Debug.Log("LoadGame method called");
         // Load any saved data from a file using the data handler
         _gameData = _dataHandler.Load();
-        
-        // If no data can be loaded, load a new game 
+
+        // If no data is loaded, create a new GameData instance
         if (_gameData == null)
         {
-            Debug.Log("Creating new Game Data");
-            NewGame();
+            Debug.Log("No saved data found. Creating new Game Data.");
+            _gameData = new GameData();
         }
 
-        // Push the loaded data to all other scripts that need it
+        // Push the loaded or new data to all other scripts that need it
         foreach (var dataPersistenceObj in dataPersistenceObjects)
         {
             dataPersistenceObj.LoadData(_gameData);
         }
         
-        Debug.Log("Loaded strawberries collected = " + _gameData.strawberryCollected);
+        Debug.Log("Loaded strawberries collected = " + _gameData.totalPoints);
+        
+        //Debug.Log("Loading scene index: " + sceneIndexToLoad);
+        //SceneManager.LoadScene(_gameData.activeScene);
+        Debug.Log("Scene loaded " + _gameData.activeScene);
     }
+
+    public int getScene()
+    {
+        int sceneIndexToLoad = (_gameData != null) ? _gameData.activeScene : 1;
+        return sceneIndexToLoad;
+    }
+    
+    public int getPoints()
+    {
+        return _gameData.totalPoints;
+    }
+
+    public void setPos(int x, int y, int z)
+    {
+        _gameData.playerPos.x = x;
+        _gameData.playerPos.y = y;
+        _gameData.playerPos.z = z;
+    }
+    
 
     public void SaveGame()
     {

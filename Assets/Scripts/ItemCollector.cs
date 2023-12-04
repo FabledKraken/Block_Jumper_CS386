@@ -1,34 +1,72 @@
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class ItemCollector : MonoBehaviour, IDataPersistence
 {
-    private int strawberryCollected = 0; // used to keep track of points
+    private int strawberryCollected = 0;
+    private List<GameObject> strawberries = new List<GameObject>();
+    public ItemCollector instance;
 
-    [SerializeField] private TextMeshProUGUI pointsText; // text for the points 
+    [SerializeField] private TextMeshProUGUI pointsText;
     [SerializeField] private AudioSource collectSoundEffect;
+
+    private int currentLevel;
 
     public void LoadData(GameData data)
     {
-        strawberryCollected = data.strawberryCollected;
-        pointsText.text = "Points: " + strawberryCollected;
+        strawberries.Clear();
+
+        foreach (var position in data.destroyedStrawberryPositions)
+        {
+            GameObject strawberry = Instantiate(Resources.Load<GameObject>("StrawberryPrefab"), position, Quaternion.identity);
+            strawberries.Add(strawberry);
+        }
+
+        currentLevel = data.activeScene;
+
+        if (data.levelScores.ContainsKey(currentLevel))
+        {
+            strawberryCollected = data.levelScores[currentLevel];
+            UpdatePointsText();
+        }
     }
 
     public void SaveData(ref GameData data)
     {
         data.strawberryCollected = strawberryCollected;
+        data.destroyedStrawberryPositions = strawberries.ConvertAll(strawberry => strawberry.transform.position);
+
+        if (!data.levelScores.ContainsKey(currentLevel))
+        {
+            data.levelScores.Add(currentLevel, strawberryCollected);
+        }
+        else
+        {
+            data.levelScores[currentLevel] = strawberryCollected;
+        }
+
+        data.totalPoints += strawberryCollected; // Accumulate total points
     }
+
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (col.gameObject.CompareTag("Strawberry"))
         {
-            // if strawberry is collected accumulate proper points and destroy the strawberry object
-            strawberryCollected++;
-            Debug.Log("Strawberries: " + strawberryCollected);
-            Destroy(col.gameObject);
-            pointsText.text = "Points: " + strawberryCollected;
             collectSoundEffect.Play();
+            Destroy(col.gameObject);
+            strawberryCollected++;
+            UpdatePointsText();
         }
+    }
+    
+    public int GetTotalPoints()
+    {
+        return strawberryCollected;
+    }
+
+    private void UpdatePointsText()
+    {
+        pointsText.text = "Points: " + strawberryCollected;
     }
 }
