@@ -92,7 +92,7 @@ public class PlayerLife : MonoBehaviour, IDataPersistence
             data.totalPoints += finish.getPoints();
         }
 
-        data.playerPos = transform.position;
+        data.playerPos = Vector3.zero;
         data.playerLives = PlayerLivesManager.Instance.GetLives();
         data.activeScene = SceneManager.GetActiveScene().buildIndex;
     }
